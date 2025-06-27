@@ -3,7 +3,7 @@ import axiosInstance from './axiosInstance.js';
 // user register
 export const RegisterUser = async (values) => {
     try {
-        const response = await axiosInstance.post('/api/users/register', values);
+        const response = await axiosInstance.post('/users/register', values);
         return response.data;
     } catch (err) {
         return {
@@ -16,7 +16,7 @@ export const RegisterUser = async (values) => {
 // user login
 export const LoginUser = async (values) => {
     try {
-        const response = await axiosInstance.post('/api/users/login', values);
+        const response = await axiosInstance.post('/users/login', values);
         return response.data;
     } catch (err) {
         return {
