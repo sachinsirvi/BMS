@@ -26,7 +26,7 @@ dbConnect();
 
 // CORS setup for frontend
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: 'https://bms-client-nrh5.onrender.com',
   credentials: true,
 }));
 
