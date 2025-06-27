@@ -5,7 +5,7 @@ import axios from 'axios';
 * usecase - ensures deafult config is attached with every request
 */
 const axiosInstance = axios.create({
-    baseURL: '/',
+    baseURL: "https://bookmyshow-fy4x.onrender.com/api",
     headers: {
         "Content-Type": "application/json",
         "Authorization": `Bearer ${localStorage.getItem('token')}`
