@@ -68,6 +68,68 @@ PORT=8080
 
 ---
 
+## 📸 Screenshots
+
+### 🎟️ User Experience
+
+- **Login Page**  
+  ![Login](./assets/login.png)
+
+- **Register Page**  
+  ![Register](./assets/register.png)
+
+- **Home Page with Movie Listings**  
+  ![Home](./assets/home.png)
+
+- **Movie Shows Page**  
+  ![Movie Shows](./assets/movie-shows.png)
+
+- **Seat Selection Page**  
+  ![Seat Selection](./assets/seat-selection.png)
+
+- **Stripe Payment Integration**  
+  ![Stripe Payment](./assets/stripe-payment.png)
+
+- **Profile Page with Booking History**  
+  ![Profile](./assets/profile.png)
+
+---
+
+### 🛠️ Admin & Partner Views
+
+- **Admin – Movie Management**  
+  ![Admin Movies](./assets/admin-movies.png)
+
+- **Admin – Partner Approval**  
+  ![Admin Partners](./assets/admin-partners.png)
+
+- **Admin – Theatre Listings**  
+  ![Admin Theatres](./assets/admin-theatres.png)
+
+- **Partner – Theatre Management**  
+  ![Partner Theatres](./assets/partner-theatres.png)
+
+- **Partner – Show Scheduling**  
+  ![Partner Shows](./assets/partner-shows.png)
+
+---
+
+### ✉️ Email Notifications
+
+- **OTP Email (Reset Password)**  
+  ![OTP Email](./assets/email-OTPverification.png)
+
+- **Booking Confirmation Email**  
+  ![Booking Confirmation](./assets/email-bookingConfirmation.png)
+
+- **Forgot Password Page**  
+  ![Forgot Password](./assets/forgot-password.png)
+
+- **Reset Password Page**  
+  ![Reset Password](./assets/reset-password.png)
+
+
+---
 ## 📬 Contact
 
 **Sachin Sirvi**  
