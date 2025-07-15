@@ -16,11 +16,10 @@ const bookingRouter = require('./routes/bookingRoutes');
 const app = express();
 dbConnect();
 
+// Security Middlewares
 app.use(helmet());
-
-app.use(express.json());
-
 app.use(mongoSanitize());
+app.use(express.json());
 
 // rate limit
 const limiter = rateLimit({
@@ -31,9 +30,17 @@ const limiter = rateLimit({
   })
 app.use('/api/', limiter);
 
-// CORS setup for fronten
+// Dynamic CORS for multiple frontend domains
+const allowedOrigins = process.env.FRONTEND_URL?.split(',') || [];
+
 app.use(cors({
-  origin: process.env.PROD_FRONTEND_ENV,
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  },
   credentials: true,
 }));
 
