@@ -25,9 +25,9 @@ jobs:
       - name: Install backend dependencies
         working-directory: ./server
         run: npm install
-
-      - name: Create backend .env file
+        
+      - name: Create and append to .env
         working-directory: ./server
-        run:
-          touch .env
-          echo "${{secrets.PROD_BACKEND_ENV}}" > .env
+        run: touch .env && echo "${{ secrets.PROD_BACKEND_ENV }}" >> .env
+
+
