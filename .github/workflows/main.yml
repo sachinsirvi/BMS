@@ -21,7 +21,9 @@ jobs:
         uses: actions/setup-node@v3
         with: 
           node-version: ${{matrix.node-version}}
-
+      #--------------
+      # Backend Setup
+      #--------------
       - name: Install backend dependencies
         working-directory: ./server
         run: npm install
@@ -33,5 +35,8 @@ jobs:
       - name: Start backend with PM2
         working-directory: ./server
         run: pm2 restart backend || pm2 start server.js --name backend
+      #--------------
+      # Frontend Setup
+      #--------------
 
 
