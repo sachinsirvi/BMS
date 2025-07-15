@@ -18,7 +18,7 @@ dbConnect();
 
 // Security Middlewares
 app.use(helmet());
-app.use(mongoSanitize());
+//app.use(mongoSanitize());
 app.use(express.json());
 
 // rate limit
