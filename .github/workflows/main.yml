@@ -1,9 +1,7 @@
-name: Deploy Fullstack App on EC2
-
 on:
   push:
     branches: 
-        - main
+      - main
 
 jobs:
   deploy:
@@ -16,27 +14,55 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-    
-      - name: Use node.js ${{matrix.node-version}}
+
+      - name: Use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with: 
-          node-version: ${{matrix.node-version}}
-      #--------------
-      # Backend Setup
-      #--------------
+          node-version: ${{ matrix.node-version }}
+
+      # --------------------------------
+      # Backend Setup (Node + PM2)
+      # --------------------------------
       - name: Install backend dependencies
         working-directory: ./server
         run: npm install
         
-      - name: Create and append to .env
+      - name: Create and append to backend .env
         working-directory: ./server
-        run: touch .env && echo "${{ secrets.PROD_BACKEND_ENV }}" >> .env
+        run: |
+          touch .env
+          echo "${{ secrets.PROD_BACKEND_ENV }}" >> .env
 
       - name: Start backend with PM2
         working-directory: ./server
-        run: /home/ubuntu/.nvm/versions/node/v22.17.0/bin/pm2 restart backend || /home/ubuntu/.nvm/versions/node/v22.17.0/bin/pm2 start server.js --name backend
-      #--------------
-      # Frontend Setup
-      #--------------
+        run: |
+          /home/ubuntu/.nvm/versions/node/v22.17.0/bin/pm2 restart backend || \
+          /home/ubuntu/.nvm/versions/node/v22.17.0/bin/pm2 start server.js --name backend
 
+      # --------------------------------
+      # Frontend Setup (React + Nginx)
+      # --------------------------------
+      - name: Clean npm cache & remove existing dependencies
+        working-directory: ./client
+        run: |
+          rm -rf node_modules
+          npm cache clean --force
 
+      - name: Install frontend dependencies
+        working-directory: ./client
+        run: npm install
+
+      - name: Create and append to frontend .env
+        working-directory: ./client
+        run: |
+          touch .env
+          echo "${{ secrets.PROD_FRONTEND_ENV }}" >> .env
+
+      - name: Build frontend
+        working-directory: ./client
+        run: npm run build
+
+      - name: Deploy frontend to Nginx
+        run: |
+          sudo rm -rf /var/www/html/*
+          sudo cp -r ./client/build/* /var/www/html/
