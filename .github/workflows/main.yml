@@ -1,0 +1,37 @@
+name: Deploy Fullstack App on EC2
+
+on:
+  push:
+    branches: 
+        - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    strategy: 
+      matrix:
+        node-version: [22.x]
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+    
+      - name: Use node.js ${{matrix.node-version}}
+        uses: actions/setup-node@v3
+        with: 
+          node-version: ${{matrix.node-version}}
+          cache: 'npm'
+          cache-dependency-path:
+            server/package-lock.json
+            client/package-lock.json
+
+      - name: Install backend dependencies
+        working-directory: ./server
+        run: npm install
+
+      - name: Create backend .env file
+        working-directory: ./server
+        run:
+          touch .env
+          echo "${{secrets.PROD_BACKEND_ENV}}" > .env
