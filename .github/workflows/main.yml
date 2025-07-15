@@ -92,3 +92,9 @@ jobs:
         run: |
           sudo rm -rf /var/www/html/*
           sudo cp -r ./react-build/* /var/www/html/
+
+      - name: Save PM2 process list and exit
+        run: |
+          pm2 save
+          echo "Deployment complete."
+
