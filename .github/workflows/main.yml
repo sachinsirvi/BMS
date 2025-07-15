@@ -32,6 +32,6 @@ jobs:
 
       - name: Start backend with PM2
         working-directory: ./server
-        run: pm2 restart backend || pm2 start serve.js --name backend
+        run: pm2 restart backend || pm2 start server.js --name backend
 
 
