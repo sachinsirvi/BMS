@@ -31,7 +31,10 @@ const limiter = rateLimit({
 app.use('/api/', limiter);
 
 // Dynamic CORS for multiple frontend domains
-const allowedOrigins = process.env.FRONTEND_URL?.split(',') || [];
+const allowedOrigins = [
+  process.env.FRONTEND_URL,
+  'http://13.210.179.78' // fallback EC2 IP
+];
 
 app.use(cors({
   origin: function (origin, callback) {
