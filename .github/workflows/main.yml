@@ -1,58 +1,37 @@
+name: Build and Deploy BMS App
+
 on:
   push:
-    branches: 
+    branches:
       - main
 
-jobs:
-  deploy:
-    runs-on: self-hosted
+concurrency:
+  group: production-deploy
+  cancel-in-progress: true
 
-    strategy: 
+jobs:
+  build:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+
+    strategy:
       matrix:
-        node-version: [22.x]
-    
+        node-version: [20.x]
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Use node.js ${{ matrix.node-version }}
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
-        with: 
+        with:
           node-version: ${{ matrix.node-version }}
-
-      # --------------------------------
-      # Backend Setup (Node + PM2)
-      # --------------------------------
-      - name: Install backend dependencies
-        working-directory: ./server
-        run: npm install
-        
-      - name: Create and append to backend .env
-        working-directory: ./server
-        run: |
-          touch .env
-          echo "${{ secrets.PROD_BACKEND_ENV }}" >> .env
-
-      - name: Start backend with PM2
-        working-directory: ./server
-        run: |
-          /home/ubuntu/.nvm/versions/node/v22.17.0/bin/pm2 restart backend || \
-          /home/ubuntu/.nvm/versions/node/v22.17.0/bin/pm2 start server.js --name backend
-
-      # --------------------------------
-      # Frontend Setup (React + Nginx)
-      # --------------------------------
-      - name: Clean npm cache & remove existing dependencies
-        working-directory: ./client
-        run: |
-          rm -rf node_modules
-          npm cache clean --force
 
       - name: Install frontend dependencies
         working-directory: ./client
-        run: npm install
+        run: npm ci
 
-      - name: Create and append to frontend .env
+      - name: Create and append frontend .env
         working-directory: ./client
         run: |
           touch .env
@@ -62,7 +41,54 @@ jobs:
         working-directory: ./client
         run: npm run build
 
+      - name: Upload frontend build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: react-build
+          path: ./client/build
+
+  deploy:
+    name: Deploy to EC2
+    needs: build
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Download frontend artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: react-build
+          path: ./react-build
+
+      # --------------------------------
+      # Backend Setup (Node + PM2)
+      # --------------------------------
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.x
+
+      - name: Install backend dependencies
+        working-directory: ./server
+        run: npm ci
+
+      - name: Create and append backend .env
+        working-directory: ./server
+        run: |
+          touch .env
+          echo "${{ secrets.PROD_BACKEND_ENV }}" >> .env
+
+      - name: Start or reload backend with PM2
+        working-directory: ./server
+        run: |
+          pm2 reload backend --update-env || pm2 start server.js --name backend
+
+      # --------------------------------
+      # Frontend Deployment (Nginx)
+      # --------------------------------
       - name: Deploy frontend to Nginx
         run: |
           sudo rm -rf /var/www/html/*
-          sudo cp -r ./client/build/* /var/www/html/
+          sudo cp -r ./react-build/* /var/www/html/
